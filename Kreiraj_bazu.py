@@ -83,10 +83,46 @@ def dodaj_pos_list(conn, pos_list):
         print(e)
 
 def prikaz(conn):
-    upit = '''SELECT posjednici.broj_pl, posjednici.ime, posjednici.prezime, posjednici.jmbg, posjednici.vrsta_prava, posjednici.obim_prava, parcele.br_parcele, parcele.pbr_parcele, parcele.kultura, parcele.klasa, parcele.pov
-     FROM parcele, posjednici WHERE posjednici.broj_pl = parcele.broj_pl;'''
-    cur = conn.cursor()
-    cur.execute(upit)
-    prikazi = cur.fetchall()
-    return prikazi
+    try:
+        upit = '''SELECT posjednici.broj_pl, posjednici.ime, posjednici.prezime, posjednici.jmbg, posjednici.vrsta_prava, posjednici.obim_prava, parcele.br_parcele, parcele.pbr_parcele, parcele.kultura, parcele.klasa, parcele.pov
+         FROM parcele, posjednici WHERE posjednici.broj_pl = parcele.broj_pl;'''
+        cur = conn.cursor()
+        cur.execute(upit)
+        prikazi = cur.fetchall()
+        return prikazi
+    except Error as e:
+        print(e)
 
+def azuriraj_posjednika(conn, ime, jmbg):
+    try:
+        azuriraj_posjednika = '''UPDATE posjednici
+                                 SET ime = ?
+                                  WHERE jmbg = ?'''
+        cur = conn.cursor()
+        parametri = (ime, jmbg)
+        cur.execute(azuriraj_posjednika, parametri)
+        conn.commit()
+    except Error as e:
+        print(e)
+def azuriraj_parcelu(conn, br_parcele, pbr_parcele, id_parcele):
+    try:
+        azuriraj_parcelu = '''UPDATE parcele 
+                            SET br_parcele = ?, pbr_parcele = ?
+                            WHERE id_parcele = ?'''
+        cur = conn.cursor()
+        parametri = (br_parcele, pbr_parcele, id_parcele)
+        cur.execute(azuriraj_parcelu, parametri)
+        conn.commit()
+    except Error as e:
+        print(e)
+
+def izbrisi_parcelu(conn, brp, pbrp):
+    try:
+        izbrisi_parcelu = '''DELETE FROM parcele
+                        WHERE br_parcele = ? AND pbr_parcele = ?'''
+        cur = conn.cursor()
+        parametri = (brp, pbrp)
+        cur.execute(izbrisi_parcelu, parametri,)
+        conn.commit()
+    except Error as e:
+        print(e)
