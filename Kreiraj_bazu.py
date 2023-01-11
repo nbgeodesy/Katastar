@@ -31,7 +31,7 @@ class PosList:
         self.id_pl = id_pl
         self.broj = broj_pl
     def __str__(self):
-        return 'Broj PLa \t' + 'Posjednik \t' + 'Parcela' + '\n' +str(self.broj)
+        return 'Broj PLa \t' +str(self.broj)
 
 def create_connection(db_file):
     conn = None

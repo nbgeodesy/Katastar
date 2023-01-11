@@ -1,5 +1,6 @@
 import uuid
 import Kreiraj_bazu
+import csv
 
 #Kreiranje baze podataka
 konekcija = Kreiraj_bazu.create_connection('operat.db')
@@ -37,7 +38,8 @@ pos_list = Kreiraj_bazu.create_table(konekcija,kreiraj_pos_list)
 
 #Unos podataka u tabele
 while True:
-    glavni_meni = input('DOBRODOSLI U PROGRAM KATASTARSKI OPERAT! \n Glavni meni: \n Unos podataka o posjednovnom listu - U \n Prikaz unesenih podataka - P \n Azuriranje podataka - A \n Brisanje parcela - B \n Eksport podataka u CSV datoteku - C \n Izlaz iz programa - I : \n ')
+    glavni_meni = input('-----------------------------------------\nDOBRODOSLI U PROGRAM KATASTARSKI OPERAT! \n-----------------------------------------\n'
+                        ' Glavni meni:\n 1) Unos podataka o posjednovnom listu - U \n 2) Prikaz unesenih podataka - P \n 3) Azuriranje podataka - A \n 4) Brisanje parcela - B \n 5) Eksport podataka u CSV datoteku - E \n 6) Izlaz iz programa - I : \n ')
     glavni_meni = glavni_meni.upper()
 
     if glavni_meni == 'U':
@@ -64,7 +66,7 @@ while True:
                     vrsta_prava = input('Unesite vrstu prava: ')
                     vrsta_prava.upper()
                     obim_prava = input('Unesite obim prava u obliku npr 1/1: ')
-
+                    print('.......................................')
                     br_posjednika -= 1
 
                     posjednik = Kreiraj_bazu.Posjednici(broj_pl, ime, prezime, jmbg, vrsta_prava, obim_prava)
@@ -90,7 +92,7 @@ while True:
 
             elif pomocni_meni == 3:
                 False
-                print('Vratili ste se korak nazad!')
+                print('Vratili ste se korak nazad! \n')
                 break
 
             else:
@@ -115,7 +117,7 @@ while True:
                 update_parcele = Kreiraj_bazu.azuriraj_parcelu(konekcija, azuriranje_brp, azuriranje_pbrp, azuriranje_idparcele)
             elif azuriraj == 3:
                 False
-                print('Vratili ste se korak nazad!')
+                print('Vratili ste se korak nazad! \n')
                 break
             else:
                 print('pogresan unos, unesite jednu od ponudjenih opcija!')
@@ -124,6 +126,41 @@ while True:
         brp_brisanje = int(input('Unesite broj parcele koju zelite izbrisati: '))
         pbrp_brisanje = int(input('Unesite podbroj parcele '))
         izbrisi_parcelu = Kreiraj_bazu.izbrisi_parcelu(konekcija, brp_brisanje, pbrp_brisanje)
+    elif glavni_meni == 'E':
+        while True:
+            izbor = int(input('Za eksport posjedovnih listova unesite 1, za eksport posjednika unesite 2, za eksport parcela unesite 3, za korak naza unesite 4: '))
+            if izbor == 1:
+                cur = konekcija.cursor()
+                cur.execute('''SELECT * FROM pos_list;''')
+                with open('pos_listovi.csv', 'w', newline= '') as pl:
+                    csv_pl = csv.writer(pl)
+                    csv_pl.writerow([i[0] for i in cur.description])
+                    csv_pl.writerows(cur)
+                print('Uspjesan eksport!')
+
+            elif izbor == 2:
+                cur = konekcija.cursor()
+                cur.execute('''SELECT * FROM posjednici;''')
+                with open('posjednici.csv', 'w', newline='') as pos:
+                    csv_pos = csv.writer(pos)
+                    csv_pos.writerow([i[0] for i in cur.description])
+                    csv_pos.writerows(cur)
+                print('Uspjesan eksport!')
+            elif izbor == 3:
+                cur = konekcija.cursor()
+                cur.execute('''SELECT * FROM parcele;''')
+                with open('parcele.csv', 'w', newline='') as par:
+                    csv_par = csv.writer(par)
+                    csv_par.writerow([i[0] for i in cur.description])
+                    csv_par.writerows(cur)
+                print('Uspjesan eksport!')
+            elif izbor == 4:
+                False
+                print('Vratili ste se korak nazad!')
+                break
+            else:
+                print('Pogresan unos, pokusajte ponovo!')
+                izbor = int(input('Za eksport posjedovnih listova unesite 1, za eksport posjednika unesite 2, za eksport parcela unesite 3, za korak naza unesite 4: '))
 
     elif glavni_meni == 'I':
         False
@@ -134,23 +171,4 @@ while True:
         glavni_meni = input('Za unos podataka o posjednovnom listu unesite U, za izlaz iz programa unesite I !: ')
         glavni_meni = glavni_meni.upper()
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
+konekcija.close()
