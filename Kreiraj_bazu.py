@@ -84,8 +84,8 @@ def dodaj_pos_list(conn, pos_list):
 
 def prikaz(conn):
     try:
-        upit = '''SELECT posjednici.broj_pl, posjednici.ime, posjednici.prezime, posjednici.jmbg, posjednici.vrsta_prava, posjednici.obim_prava, parcele.br_parcele, parcele.pbr_parcele, parcele.kultura, parcele.klasa, parcele.pov
-         FROM parcele, posjednici WHERE posjednici.broj_pl = parcele.broj_pl;'''
+        upit = '''SELECT posjednici.broj_pl, posjednici.ime, posjednici.prezime, posjednici.jmbg, posjednici.vrsta_prava, posjednici.obim_prava, parcele.br_parcele, parcele.pbr_parcele, parcele.kultura, parcele.klasa, parcele.pov, pos_list.id_pl
+         FROM parcele, posjednici, pos_list WHERE posjednici.broj_pl = parcele.broj_pl;'''
         cur = conn.cursor()
         cur.execute(upit)
         prikazi = cur.fetchall()
@@ -93,11 +93,23 @@ def prikaz(conn):
     except Error as e:
         print(e)
 
+def azuriraj_pl(conn, pl, id_pl):
+    try:
+        azuriraj_pl = '''UPDATE pos_list
+                        SET broj_pl = ?
+                        WHERE id_pl = ?'''
+        cur = conn.cursor()
+        parametri = (pl, id_pl)
+        cur.execute(azuriraj_pl, parametri)
+        conn.commit()
+    except Error as e:
+        print(e)
+
 def azuriraj_posjednika(conn, ime, jmbg):
     try:
         azuriraj_posjednika = '''UPDATE posjednici
-                                 SET ime = ?
-                                  WHERE jmbg = ?'''
+                                SET ime = ?
+                                WHERE jmbg = ?'''
         cur = conn.cursor()
         parametri = (ime, jmbg)
         cur.execute(azuriraj_posjednika, parametri)
@@ -122,7 +134,7 @@ def izbrisi_parcelu(conn, brp, pbrp):
                         WHERE br_parcele = ? AND pbr_parcele = ?'''
         cur = conn.cursor()
         parametri = (brp, pbrp)
-        cur.execute(izbrisi_parcelu, parametri,)
+        cur.execute(izbrisi_parcelu, parametri)
         conn.commit()
     except Error as e:
         print(e)
